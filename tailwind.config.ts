@@ -5,8 +5,8 @@ import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 
 // Custom plugin to add CSS variables for colors
 function addVariablesForColors({ addBase, theme }: any) {
-  let allColors = flattenColorPalette(theme("colors"));
-  let newVars = Object.fromEntries(
+  const allColors = flattenColorPalette(theme("colors"));
+  const newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
   );
 
@@ -20,25 +20,29 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/**/*.{ts,tsx}", // Additional content path as per your requirement
+    "./src/**/*.{ts,tsx}",
   ],
-  darkMode: "class", // Enable dark mode
+  darkMode: "class", // Enable class-based dark mode
   theme: {
     extend: {
       colors: {
+        // Define custom color variables that adjust based on theme
         background: "var(--background)",
         foreground: "var(--foreground)",
         ...colors, // Add Tailwind's default colors as a base
+        // Optional: customize background colors for dark mode
+        "neutral-dark": "#1A1A1A",
+        "neutral-light": "#FAFAFA",
       },
       boxShadow: {
         input: `0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08)`,
       },
       fontFamily: {
-        sans: ["Inter", ...defaultTheme.fontFamily.sans], // Extending the default font
+        sans: ["Inter", ...defaultTheme.fontFamily.sans],
       },
     },
   },
-  plugins: [addVariablesForColors], // Register the custom plugin
+  plugins: [addVariablesForColors],
 };
 
 export default config;
