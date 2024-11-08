@@ -2,12 +2,13 @@ import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 import colors from "tailwindcss/colors";
 import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
+import type { PluginAPI } from "tailwindcss/types/config";
 
 // Custom plugin to add CSS variables for colors
-function addVariablesForColors({ addBase, theme }: any) {
-  const allColors = flattenColorPalette(theme("colors"));
-  const newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+function addVariablesForColors({ addBase, theme }: PluginAPI) {
+  const allColors = flattenColorPalette(theme("colors")) as Record<string, string>;
+  const newVars: Record<string, string> = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val as string])
   );
 
   addBase({
@@ -26,11 +27,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Define custom color variables that adjust based on theme
         background: "var(--background)",
         foreground: "var(--foreground)",
-        ...colors, // Add Tailwind's default colors as a base
-        // Optional: customize background colors for dark mode
+        ...colors,
         "neutral-dark": "#1A1A1A",
         "neutral-light": "#FAFAFA",
       },
