@@ -1,3 +1,4 @@
+// app/signup/page.tsx
 import { SignupFormDemo } from "@/components/auth/SignupForm";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Cover } from "@/components/ui/cover";
@@ -8,7 +9,8 @@ const words = `Experience efficiency like never before. Accelerate customer
             workflow seamlessly. With roles-based dashboards and robust CRM
             integrations, our all-in-one solution empowers your team to work
             smarter, not harder`;
-export default function Home() {
+
+export default function SignupPage() {
   return (
     <main className="relative bg-black-100 flex justify-center items-center overflow-hidden mx-auto sm:px-10 px-5 min-h-screen">
       {/* BackgroundBeams with a lower z-index */}
