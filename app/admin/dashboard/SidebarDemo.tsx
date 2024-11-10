@@ -73,7 +73,16 @@ export function SidebarDemo() {
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             {open ? <Logo /> : <LogoIcon />}
             <div className="mt-12 flex flex-col gap-6">
-              {links.map((link, idx) => (
+              {/* Dealerships link and Add button in a horizontal flex container */}
+              <div className="flex items-center gap-4">
+                <SidebarLink link={links[0]} className="text-2xl" />
+                <div className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200">
+                  Add Dealership
+                </div>
+              </div>
+
+              {/* Render the rest of the links */}
+              {links.slice(1).map((link, idx) => (
                 <SidebarLink key={idx} link={link} className="text-2xl" />
               ))}
             </div>
