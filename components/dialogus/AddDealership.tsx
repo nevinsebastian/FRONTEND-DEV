@@ -1,6 +1,7 @@
 // components/dialogs/EditProfileDialog.tsx
 
 "use client";
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -16,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { IconSquarePlus } from "@tabler/icons-react";
+
 
 const AddDealership = () => {
   const [dealershipName, setDealershipName] = useState("");
