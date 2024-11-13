@@ -14,8 +14,12 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import AddDealership from "@/components/dialogus/AddDealership";
+import DealershipDashboard from "./DealershipDashboard";
 
 export function SidebarDemo() {
+  const [open, setOpen] = useState(false);
+  const [selectedLink, setSelectedLink] = useState(""); // Track selected sidebar link
+
   const links = [
     {
       label: "Dealerships",
@@ -61,8 +65,6 @@ export function SidebarDemo() {
     },
   ];
 
-  const [open, setOpen] = useState(false);
-
   return (
     <div
       className={cn(
@@ -76,16 +78,24 @@ export function SidebarDemo() {
             <div className="mt-12 flex flex-col gap-6">
               {/* Dealerships link and Add button in a horizontal flex container */}
               <div className="flex items-center gap-4">
-                <SidebarLink link={links[0]} className="text-2xl" />
-                <div>
-                  {/* <IconSquarePlus className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" /> */}
-                  <AddDealership />
-                </div>
+                <button
+                  onClick={() => setSelectedLink("Dealerships")}
+                  className="flex items-center gap-2 text-2xl"
+                >
+                  <SidebarLink link={links[0]} className="text-2xl" />
+                </button>
+                <AddDealership />
               </div>
 
               {/* Render the rest of the links */}
               {links.slice(1).map((link, idx) => (
-                <SidebarLink key={idx} link={link} className="text-2xl" />
+                <button
+                  key={idx}
+                  onClick={() => setSelectedLink(link.label)}
+                  className="text-2xl"
+                >
+                  <SidebarLink link={link} />
+                </button>
               ))}
             </div>
           </div>
@@ -109,7 +119,8 @@ export function SidebarDemo() {
           </div>
         </SidebarBody>
       </Sidebar>
-      <Dashboard />
+      {/* Pass the selected link to the Dashboard */}
+      <Dashboard selectedLink={selectedLink} />
     </div>
   );
 }
@@ -143,11 +154,13 @@ export const LogoIcon = () => {
   );
 };
 
-// Dummy dashboard component with content
-const Dashboard = () => {
+// Updated Dashboard component with conditional "Branch" button
+const Dashboard = ({ selectedLink }) => {
   return (
     <div className="flex flex-1">
       <div className="p-6 md:p-12 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-6 flex-1 w-full h-full">
+        {/* Conditionally render "Branch" button based on selected sidebar link */}
+        {selectedLink === "Dealerships" && <DealershipDashboard />}
         <div className="flex gap-6">
           {[...new Array(4)].map((_, i) => (
             <div
