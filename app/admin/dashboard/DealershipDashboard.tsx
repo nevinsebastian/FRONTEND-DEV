@@ -15,6 +15,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Component } from "@/components/charts/SalesChart";
+
+
+
 
 type Status = {
   value: string;
@@ -81,7 +85,7 @@ const DealershipDashboard = () => {
       <ComboboxPopover />
 
       <h1 className="text-2xl font-bold mb-4">Dealership Dashboard</h1>
-
+      <Component />
       {/* Dashboard Cards */}
       <div className="flex gap-6">
         {[...new Array(4)].map((_, i) => (
