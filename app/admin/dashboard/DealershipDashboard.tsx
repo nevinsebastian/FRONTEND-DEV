@@ -76,16 +76,11 @@ export function ComboboxPopover() {
 
 const DealershipDashboard = () => {
   return (
-    <div className="p-6 md:p-12 bg-white dark:bg-neutral-900 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 relative">
+    <div className="p-6 md:p-12 bg-white dark:bg-neutral-900 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 relative mt-5">
       {/* Adding the ComboboxPopover at the top-right corner */}
       <ComboboxPopover />
 
       <h1 className="text-2xl font-bold mb-4">Dealership Dashboard</h1>
-
-      {/* Add Branch Button */}
-      <button className="bg-blue-500 text-white p-2 rounded-md mb-6">
-        Branch
-      </button>
 
       {/* Dashboard Cards */}
       <div className="flex gap-6">
