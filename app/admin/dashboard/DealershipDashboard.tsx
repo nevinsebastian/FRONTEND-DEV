@@ -1,11 +1,94 @@
+"use client";
+
 import React from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+type Status = {
+  value: string;
+  label: string;
+};
+
+const statuses: Status[] = [
+  { value: "Alappuzha", label: "Alappuzha" },
+  { value: "Kollam", label: "Kollam" },
+  { value: "Ambalappuzha", label: "Ambalapuzha" },
+  { value: "Muhamma", label: "Muhamma" },
+];
+
+// ComboboxPopover component
+export function ComboboxPopover() {
+  const [open, setOpen] = React.useState(false);
+  const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(
+    null
+  );
+
+  return (
+    <div className="fixed top-4 right-4 flex items-center space-x-4 z-50">
+      <p className="text-sm text-muted-foreground">Branch</p>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-[150px] justify-start">
+            {selectedStatus ? <>{selectedStatus.label}</> : <>Alappuzha</>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="p-0" side="bottom" align="start">
+          <Command>
+            <CommandInput placeholder="Change status..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup>
+                {statuses.map((status) => (
+                  <CommandItem
+                    key={status.value}
+                    value={status.value}
+                    onSelect={(value) => {
+                      setSelectedStatus(
+                        statuses.find((status) => status.value === value) ||
+                          null
+                      );
+                      setOpen(false);
+                    }}
+                  >
+                    {status.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
 
 const DealershipDashboard = () => {
   return (
-    <div className="p-6 md:p-12 bg-white dark:bg-neutral-900 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700">
+    <div className="p-6 md:p-12 bg-white dark:bg-neutral-900 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 relative">
+      {/* Adding the ComboboxPopover at the top-right corner */}
+      <ComboboxPopover />
+
       <h1 className="text-2xl font-bold mb-4">Dealership Dashboard</h1>
-      <button className="bg-blue-500 text-white p-2 rounded-md">Branch</button>
-      <div className="flex gap-6 mt-6">
+
+      {/* Add Branch Button */}
+      <button className="bg-blue-500 text-white p-2 rounded-md mb-6">
+        Branch
+      </button>
+
+      {/* Dashboard Cards */}
+      <div className="flex gap-6">
         {[...new Array(4)].map((_, i) => (
           <div
             key={i}
