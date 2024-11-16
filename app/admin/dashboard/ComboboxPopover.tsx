@@ -15,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Plus } from "lucide-react"; // Make sure to install lucide-react for icons or use any other icon library
+import { Plus } from "lucide-react"; // Ensure you have lucide-react installed or use any other icon library
 
 type Status = {
   value: string;
@@ -35,14 +35,8 @@ export function ComboboxPopover() {
     null
   );
 
-  const handleCreateNewBranch = () => {
-    // Logic for creating a new branch (you can show a modal or navigate to a form)
-    console.log("Create New Branch clicked");
-    setOpen(false);
-  };
-
   return (
-    <div className="fixed top-4 right-4 flex items-center space-x-4 z-50">
+    <div className="flex items-center space-x-4">
       <p className="text-sm text-muted-foreground">Branch</p>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -55,7 +49,6 @@ export function ComboboxPopover() {
             <CommandInput placeholder="Change branch..." />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
-
               <CommandGroup>
                 {statuses.map((status) => (
                   <CommandItem
