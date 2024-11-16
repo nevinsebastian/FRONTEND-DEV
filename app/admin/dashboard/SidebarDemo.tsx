@@ -15,7 +15,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import AddDealership from "@/components/dialogus/AddDealership";
 import DealershipDashboard from "./DealershipDashboard";
-import SettingsPage from "./SettingsPage"; // Import the SettingsPage
+import SettingsPage from "../settings/settings";
 
 export function SidebarDemo() {
   const [open, setOpen] = useState(false);
@@ -186,13 +186,4 @@ const Dashboard = ({ selectedLink }) => {
 };
 
 // New SettingsPage Component (a placeholder for your Settings content)
-const SettingsPage = () => {
-  return (
-    <div className="h-full p-6 md:p-12">
-      <h1 className="text-2xl font-bold mb-4">Settings</h1>
-      <p>Here you can manage your settings.</p>
-      {/* Add additional settings-related components and functionality */}
-    </div>
-  );
-};
 
