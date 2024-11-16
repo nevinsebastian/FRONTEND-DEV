@@ -15,6 +15,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import AddDealership from "@/components/dialogus/AddDealership";
 import DealershipDashboard from "./DealershipDashboard";
+import SettingsPage from "./SettingsPage"; // Import the SettingsPage
 
 export function SidebarDemo() {
   const [open, setOpen] = useState(false);
@@ -159,8 +160,10 @@ const Dashboard = ({ selectedLink }) => {
   return (
     <div className="flex flex-1">
       <div className="p-6 md:p-12 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-6 flex-1 w-full h-full">
-        {/* Conditionally render "Branch" button based on selected sidebar link */}
+        {/* Conditionally render "Dealership" or "Settings" component based on selected sidebar link */}
         {selectedLink === "Dealerships" && <DealershipDashboard />}
+        {selectedLink === "Settings" && <SettingsPage />}{" "}
+        {/* Render SettingsPage when selected */}
         <div className="flex gap-6">
           {[...new Array(4)].map((_, i) => (
             <div
@@ -181,3 +184,15 @@ const Dashboard = ({ selectedLink }) => {
     </div>
   );
 };
+
+// New SettingsPage Component (a placeholder for your Settings content)
+const SettingsPage = () => {
+  return (
+    <div className="h-full p-6 md:p-12">
+      <h1 className="text-2xl font-bold mb-4">Settings</h1>
+      <p>Here you can manage your settings.</p>
+      {/* Add additional settings-related components and functionality */}
+    </div>
+  );
+};
+
