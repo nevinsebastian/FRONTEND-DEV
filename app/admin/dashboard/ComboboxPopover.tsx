@@ -56,17 +56,6 @@ export function ComboboxPopover() {
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
 
-              {/* Add Create New Branch option */}
-              <CommandGroup>
-                <CommandItem
-                  onSelect={handleCreateNewBranch}
-                  className="text-blue-600 font-semibold"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create New Branch
-                </CommandItem>
-              </CommandGroup>
-
               <CommandGroup>
                 {statuses.map((status) => (
                   <CommandItem
