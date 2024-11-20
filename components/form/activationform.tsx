@@ -17,6 +17,9 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
+import Link from "next/link";
+
+
 // ActivationForm component
 export function ActivationForm() {
   const [showOtp, setShowOtp] = useState(false);
@@ -244,6 +247,12 @@ export function ActivationForm() {
           )}
         </div>
       )}
+      <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
+        Already signed in?{" "}
+        <Link href="/signin" className="text-blue-500 hover:underline">
+          Sign In
+        </Link>
+      </p>
     </div>
   );
 }
