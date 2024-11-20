@@ -4,13 +4,13 @@ import React, { useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button"; // ShadCN Button
+import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp"; // OTP components
+} from "@/components/ui/input-otp";
 
 export function ActivationForm() {
   const [showOtp, setShowOtp] = useState(false);
@@ -18,6 +18,40 @@ export function ActivationForm() {
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [otpMessage, setOtpMessage] = useState<string>("");
+
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleSendOtp = async () => {
+    if (!isValidEmail(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://3.111.52.81:8000/verify-email?email=${email}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setOtpMessage(data.msg || `OTP sent to ${email}`);
+        setShowOtp(true);
+      } else {
+        alert("Failed to send OTP. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("An error occurred while sending the OTP.");
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,14 +86,20 @@ export function ActivationForm() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </LabelInputContainer>
-          <button
+          <Button
             type="button"
-            onClick={() => setShowOtp(true)}
-            className="bg-gradient-to-br from-black to-neutral-600 text-white rounded-md h-10 px-4 font-medium shadow-input"
+            onClick={handleSendOtp}
+            disabled={!isValidEmail(email)}
+            className={cn(
+              "bg-gradient-to-br from-black to-neutral-600 text-white rounded-md h-10 px-4 font-medium shadow-input",
+              {
+                "opacity-50 cursor-not-allowed": !isValidEmail(email),
+              }
+            )}
             style={{ marginTop: "24px" }}
           >
-            OTP
-          </button>
+            Send OTP
+          </Button>
         </div>
 
         {/* OTP Field */}
@@ -81,11 +121,9 @@ export function ActivationForm() {
                 </InputOTPGroup>
               </InputOTP>
             </LabelInputContainer>
-            {email && (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
-                OTP sent to {email}
-              </p>
-            )}
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
+              {otpMessage}
+            </p>
           </div>
         )}
 
