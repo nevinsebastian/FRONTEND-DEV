@@ -1,22 +1,24 @@
 "use client";
+
 import React, { useState } from "react";
-import { useRouter } from "next/router"; // For routing
+import { useRouter } from "next/navigation"; // Correct hook for App Router
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { signIn } from "./signin";
 import Link from "next/link";
-
+import { signIn } from "./signin";
 export function SignIn() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isAccountActivated, setIsAccountActivated] = useState<boolean>(false);
+  const router = useRouter(); // For navigation
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      // Call your API
       const response = await signIn(email, password);
 
       if (response.detail) {
@@ -24,9 +26,32 @@ export function SignIn() {
         setIsAccountActivated(false);
       } else if (response.access_token) {
         console.log("Login successful");
+
+        // Role-based routing
+        switch (response.role) {
+          case "admin":
+            router.push("/admin");
+            break;
+          case "sales_executive":
+            router.push("/sales");
+            break;
+          case "manager":
+            router.push("/manager");
+            break;
+          case "rto":
+            router.push("/rto");
+            break;
+          case "accounts":
+            router.push("/accounts");
+            break;
+          default:
+            setErrorMessage("Role not recognized");
+            break;
+        }
       }
     } catch (error) {
       console.error("Error during login", error);
+      setErrorMessage("An error occurred while logging in. Please try again.");
     }
   };
 
@@ -84,7 +109,7 @@ export function SignIn() {
         <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
       </form>
       <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-        Didnt activate your account ?{" "}
+        Didn’t activate your account?{" "}
         <Link href="/activate" className="text-blue-500 hover:underline">
           Activate
         </Link>
@@ -106,3 +131,4 @@ const LabelInputContainer = ({
     </div>
   );
 };
+
