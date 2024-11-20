@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { SidebarDemo } from "./components/SideBar";
 
 const SalesDashboard = () => {
   const router = useRouter();
@@ -34,6 +35,8 @@ const SalesDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Add the Navbar at the top of the page */}
+      <SidebarDemo />
       <div className="p-6">
         <h1 className="text-2xl font-bold">Welcome to the Sales Dashboard</h1>
         <p className="text-gray-700 mt-2">
