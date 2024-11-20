@@ -1,18 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Correct hook for App Router
+import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { signIn } from "./signin";
+
 export function SignIn() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isAccountActivated, setIsAccountActivated] = useState<boolean>(false);
   const router = useRouter(); // For navigation
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,9 +22,12 @@ export function SignIn() {
 
       if (response.detail) {
         setErrorMessage(response.detail);
-        setIsAccountActivated(false);
       } else if (response.access_token) {
         console.log("Login successful");
+
+        // Store token in localStorage
+        localStorage.setItem("auth_token", response.access_token);
+        localStorage.setItem("role", response.role); // Store user role
 
         // Role-based routing
         switch (response.role) {
@@ -33,16 +35,7 @@ export function SignIn() {
             router.push("/admin");
             break;
           case "sales_executive":
-            router.push("/sales");
-            break;
-          case "manager":
-            router.push("/manager");
-            break;
-          case "rto":
-            router.push("/rto");
-            break;
-          case "accounts":
-            router.push("/accounts");
+            router.push("/sales/dashboard");
             break;
           default:
             setErrorMessage("Role not recognized");
@@ -87,33 +80,17 @@ export function SignIn() {
           />
         </LabelInputContainer>
 
-        <button
+        <Button
           type="submit"
           className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 text-white rounded-md h-10 w-full font-medium"
         >
           Sign In
-        </button>
+        </Button>
 
         {errorMessage && (
           <div className="mt-4 text-red-600">{errorMessage}</div>
         )}
-
-        {isAccountActivated === false && errorMessage && (
-          <div className="mt-4">
-            <Button className="w-full bg-green-600 text-white rounded-md h-10">
-              Activate Account
-            </Button>
-          </div>
-        )}
-
-        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
       </form>
-      <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-        Didn’t activate your account?{" "}
-        <Link href="/activate" className="text-blue-500 hover:underline">
-          Activate
-        </Link>
-      </p>
     </div>
   );
 }
@@ -132,3 +109,27 @@ const LabelInputContainer = ({
   );
 };
 
+export const signIn = async (email: string, password: string) => {
+  const formData = new URLSearchParams();
+  formData.append("grant_type", "");
+  formData.append("username", email);
+  formData.append("password", password);
+  formData.append("scope", "");
+  formData.append("client_id", "");
+  formData.append("client_secret", "");
+
+  const response = await fetch("http://3.111.52.81:8000/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("Login failed");
+  }
+
+  return response.json();
+};

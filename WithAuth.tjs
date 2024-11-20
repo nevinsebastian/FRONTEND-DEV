@@ -1,0 +1,21 @@
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import React from "react";
+
+const withAuth = (WrappedComponent: React.ComponentType) => {
+  return (props: any) => {
+    const router = useRouter();
+
+    useEffect(() => {
+      const token = localStorage.getItem("auth_token");
+
+      if (!token) {
+        router.push("/signin");
+      }
+    }, [router]);
+
+    return <WrappedComponent {...props} />;
+  };
+};
+
+export default withAuth;

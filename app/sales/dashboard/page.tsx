@@ -1,6 +1,37 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 const SalesDashboard = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (role === "sales_executive") {
+      // Logic for Sales Executive view
+    } else {
+      router.push("/signin"); // Redirect if role doesn't match
+    }
+  }, [router]);
+
+  useEffect(() => {
+    // Check if the token exists in localStorage
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      // Redirect to login page if no token
+      router.push("/signin");
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("role");
+    router.push("/signin");
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="p-6">
