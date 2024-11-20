@@ -23,21 +23,14 @@ export function SidebarDemo() {
 
   const links = [
     {
-      label: "Dealerships",
-      href: "#",
-      icon: (
-        <IconBrandItch className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Employees",
+      label: "Customer",
       href: "#",
       icon: (
         <IconMan className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
       ),
     },
     {
-      label: "Customer",
+      label: "Employee",
       href: "#",
       icon: (
         <IconRun className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
