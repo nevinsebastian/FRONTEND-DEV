@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { verifyEmail } from "@/app/activate/api/activate";
+import { verifyOtp } from "@/app/activate/api/activate";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
@@ -12,17 +14,22 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
+// ActivationForm component
 export function ActivationForm() {
   const [showOtp, setShowOtp] = useState(false);
   const [email, setEmail] = useState<string>("");
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [otpMessage, setOtpMessage] = useState<string>("");
+  const [otpCode, setOtpCode] = useState<string>(""); // Store OTP code
+  const [otpMessage, setOtpMessage] = useState<string>(""); // Display OTP sent message
+  const [isVerified, setIsVerified] = useState<boolean>(false); // Track if OTP is verified
+  const [emailVerifiedMessage, setEmailVerifiedMessage] = useState<string>("");
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  // API call to verify email and send OTP
   const handleSendOtp = async () => {
     if (!isValidEmail(email)) {
       alert("Please enter a valid email address.");
@@ -30,26 +37,34 @@ export function ActivationForm() {
     }
 
     try {
-      const response = await fetch(
-        `http://3.111.52.81:8000/verify-email?email=${email}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const message = await verifyEmail(email); // Call API function
+      setOtpMessage(message);
+      setShowOtp(true);
+    } catch (error: any) {
+      alert(error.message || "Failed to send OTP. Please try again.");
+    }
+  };
 
-      if (response.ok) {
-        const data = await response.json();
-        setOtpMessage(data.msg || `OTP sent to ${email}`);
-        setShowOtp(true);
-      } else {
-        alert("Failed to send OTP. Please try again.");
+  // Handle OTP input and check if OTP is complete (6 digits)
+  const handleOtpChange = (otp: string) => {
+    setOtpCode(otp);
+
+    // If OTP is complete, verify it
+    if (otp.length === 6) {
+      handleVerifyOtp(otp);
+    }
+  };
+
+  // API call to verify OTP
+  const handleVerifyOtp = async (otp: string) => {
+    try {
+      const response = await verifyOtp(email, otp);
+      if (response.msg === "Email verified successfully.") {
+        setIsVerified(true); // OTP successfully verified
+        setEmailVerifiedMessage("Email Verified");
       }
-    } catch (error) {
-      console.error("Error sending OTP:", error);
-      alert("An error occurred while sending the OTP.");
+    } catch (error: any) {
+      alert(error.message || "OTP verification failed. Please try again.");
     }
   };
 
@@ -61,7 +76,7 @@ export function ActivationForm() {
       newPassword,
       phoneNumber,
     });
-    // Add API call for activation here
+    // Add further activation logic here
   };
 
   return (
@@ -107,7 +122,11 @@ export function ActivationForm() {
           <div className="mb-4">
             <LabelInputContainer>
               <Label htmlFor="otp">OTP</Label>
-              <InputOTP maxLength={6}>
+              <InputOTP
+                maxLength={6}
+                value={otpCode}
+                onChange={handleOtpChange}
+              >
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />
                   <InputOTPSlot index={1} />
@@ -124,6 +143,11 @@ export function ActivationForm() {
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
               {otpMessage}
             </p>
+            {isVerified && (
+              <div className="mt-2 text-green-500 flex items-center">
+                <span className="mr-2">&#10003;</span> {emailVerifiedMessage}
+              </div>
+            )}
           </div>
         )}
 
@@ -178,6 +202,7 @@ export function ActivationForm() {
   );
 }
 
+// Helper component for input containers
 const LabelInputContainer = ({
   children,
   className,
