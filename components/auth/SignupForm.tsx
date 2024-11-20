@@ -10,7 +10,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"; // Import OTP components
-
+import Link from "next/link";
 export function SignupFormDemo() {
   const [showOtp, setShowOtp] = useState(false);
   const [email, setEmail] = useState<string>("");
@@ -134,8 +134,15 @@ export function SignupFormDemo() {
             <span className="text-neutral-700 dark:text-neutral-300 text-sm">
               Google
             </span>
+
             <BottomGradient />
           </button>
+          <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
+            Already signed in?{" "}
+            <Link href="/signin" className="text-blue-500 hover:underline">
+              Sign In
+            </Link>
+          </p>
         </div>
       </form>
     </div>

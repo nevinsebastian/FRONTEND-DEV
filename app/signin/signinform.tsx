@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { signIn } from "./signin";
+import Link from "next/link";
 
 export function SignIn() {
   const [email, setEmail] = useState<string>("");
@@ -32,10 +33,10 @@ export function SignIn() {
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome to Aceternity
+        Welcome to Gluping
       </h2>
       <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        Login to Aceternity to access your account.
+        Login to access your account.
       </p>
 
       <form className="my-8" onSubmit={handleSubmit}>
@@ -82,6 +83,12 @@ export function SignIn() {
 
         <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
       </form>
+      <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
+        Didnt activate your account ?{" "}
+        <Link href="/activate" className="text-blue-500 hover:underline">
+          Activate
+        </Link>
+      </p>
     </div>
   );
 }
