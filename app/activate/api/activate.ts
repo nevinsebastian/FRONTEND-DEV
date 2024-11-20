@@ -43,3 +43,41 @@ export const verifyOtp = async (email: string, otp: string) => {
   const data = await response.json();
   return data;
 };
+
+
+
+
+// api/activate.ts
+
+
+export const activateEmployee = async (data: {
+  email: string;
+  current_password: string;
+  new_password: string;
+  phone_number: string;
+}) => {
+  try {
+    const response = await fetch("http://3.111.52.81:8000/employees/activate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      if (response.status === 400 && errorResponse.detail === "Account is already activated") {
+        throw new Error("The account is already activated.");
+      }
+      // Handle other status codes (422, 500, etc.)
+      throw new Error(errorResponse.detail || "Something went wrong.");
+    }
+
+    return await response.json();  // Assuming successful activation
+  } catch (error: any) {
+    console.error("Error during activation:", error.message);
+    throw new Error(error.message || "Activation failed.");
+  }
+};

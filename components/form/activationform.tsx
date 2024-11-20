@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { verifyEmail } from "@/app/activate/api/activate";
-import { verifyOtp } from "@/app/activate/api/activate";
+import React, { useState } from "react";
+import {
+  verifyEmail,
+  verifyOtp,
+  activateEmployee,
+} from "@/app/activate/api/activate";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
@@ -25,6 +28,8 @@ export function ActivationForm() {
   const [otpMessage, setOtpMessage] = useState<string>(""); // Display OTP sent message
   const [isVerified, setIsVerified] = useState<boolean>(false); // Track if OTP is verified
   const [emailVerifiedMessage, setEmailVerifiedMessage] = useState<string>("");
+  const [activationMessage, setActivationMessage] = useState<string>(""); // Track activation status
+  const [isActivated, setIsActivated] = useState<boolean>(false); // Track if account is activated
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -65,6 +70,36 @@ export function ActivationForm() {
       }
     } catch (error: any) {
       alert(error.message || "OTP verification failed. Please try again.");
+    }
+  };
+
+  // API call to activate employee
+  const handleActivateAccount = async () => {
+    if (!currentPassword || !newPassword || !phoneNumber) {
+      alert("Please fill in all fields to activate your account.");
+      return;
+    }
+
+    const activationData = {
+      email,
+      current_password: currentPassword,
+      new_password: newPassword,
+      phone_number: phoneNumber,
+    };
+
+    try {
+      const response = await activateEmployee(activationData);
+
+      if (response.detail === "Account is already activated") {
+        setActivationMessage("Account is already activated.");
+        setIsActivated(false);
+      } else {
+        setActivationMessage("Account activated successfully.");
+        setIsActivated(true);
+      }
+    } catch (error: any) {
+      setActivationMessage("Account activation failed.");
+      setIsActivated(false);
     }
   };
 
@@ -194,10 +229,21 @@ export function ActivationForm() {
         <Button
           type="submit"
           className="w-full mt-4 bg-gradient-to-br from-black to-neutral-600 text-white rounded-md h-10 font-medium"
+          onClick={handleActivateAccount}
         >
           Activate Account
         </Button>
       </form>
+
+      {activationMessage && (
+        <div className="mt-4 flex items-center">
+          {isActivated ? (
+            <span className="text-green-500">&#10003; {activationMessage}</span>
+          ) : (
+            <span className="text-red-500">&#10007; {activationMessage}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -209,10 +255,8 @@ const LabelInputContainer = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};
+}) => (
+  <div className={cn("w-full flex flex-col space-y-2", className)}>
+    {children}
+  </div>
+);
