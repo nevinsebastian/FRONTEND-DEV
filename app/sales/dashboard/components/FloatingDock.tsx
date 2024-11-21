@@ -1,15 +1,13 @@
 import React from "react";
-import { FloatingDock } from "@/components/ui/floating-dock";
 import {
-  IconBrandGithub,
   IconBrandX,
   IconExchange,
   IconHome,
   IconNewSection,
-  IconTerminal2,
 } from "@tabler/icons-react";
-import Image from "next/image";
-
+import InsertChartOutlinedOutlinedIcon from "@mui/icons-material/InsertChartOutlinedOutlined";
+import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 export function FloatingDockDemo() {
   const links = [
     {
@@ -19,50 +17,33 @@ export function FloatingDockDemo() {
       ),
       href: "#",
     },
+
     {
-      title: "Products",
-      icon: (
-        <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
-    },
-    {
-      title: "Components",
+      title: "Create Customer",
       icon: (
         <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "#",
     },
     {
-      title: "Aceternity UI",
+      title: "Message",
       icon: (
-        <Image
-          src="https://assets.aceternity.com/logo-dark.png"
-          width={20}
-          height={20}
-          alt="Aceternity Logo"
-        />
+        <ChatBubbleOutlineOutlinedIcon className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "#",
     },
     {
-      title: "Changelog",
+      title: "Prefomensence",
       icon: (
-        <IconExchange className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <InsertChartOutlinedOutlinedIcon className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "#",
     },
+
     {
-      title: "Twitter",
+      title: "Profile",
       icon: (
-        <IconBrandX className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
-    },
-    {
-      title: "GitHub",
-      icon: (
-        <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <AccountCircleOutlinedIcon className="h-full w-full text-xl	     text-neutral-500 dark:text-neutral-300" />
       ),
       href: "#",
     },
