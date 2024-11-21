@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { SidebarDemo } from "./components/SideBar";
+
+import { FloatingDockDemo } from "./components/FloatingDock";
 
 const SalesDashboard = () => {
   const router = useRouter();
@@ -30,8 +31,8 @@ const SalesDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <SidebarDemo handleLogout={handleLogout} />
+    <div>
+      <FloatingDockDemo />
     </div>
   );
 };
