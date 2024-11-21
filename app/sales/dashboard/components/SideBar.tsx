@@ -3,19 +3,19 @@ import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
   IconArrowLeft,
-  IconBrandItch,
-  IconSettings,
   IconMan,
-  IconReportAnalytics,
   IconRun,
+  IconReportAnalytics,
+  IconSettings,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import AddDealership from "@/components/dialogus/AddDealership";
-import DealershipDashboard from "@/app/admin/dashboard/DealershipDashboard";
+
 import SettingsPage from "@/app/admin/settings/settings";
+import CustomerSection from "../CustomerSection";
 
 export function SidebarDemo() {
   const [open, setOpen] = useState(false);
@@ -73,7 +73,7 @@ export function SidebarDemo() {
               {/* Dealerships link and Add button in a horizontal flex container */}
               <div className="flex items-center gap-4">
                 <button
-                  onClick={() => setSelectedLink("Dealerships")}
+                  onClick={() => setSelectedLink("Customer")}
                   className="flex items-center gap-2 text-2xl"
                 >
                   <SidebarLink link={links[0]} className="text-2xl" />
@@ -119,6 +119,29 @@ export function SidebarDemo() {
   );
 }
 
+const Dashboard = ({ selectedLink }) => {
+  return (
+    <div className="flex flex-1">
+      <div className="p-6 md:p-12 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-6 flex-1 w-full h-full">
+        {/* Conditionally render components based on selected sidebar link */}
+        {selectedLink === "Customer" && <CustomerSection />}{" "}
+        {/* Render CustomerSection */}
+        {selectedLink === "Settings" && <SettingsPage />}
+        {/* Add more conditional renderings for other links */}
+      </div>
+    </div>
+  );
+};
+
+// Example placeholder CustomerSection component
+const CustomerScreen = () => {
+  return (
+    <div>
+      <CustomerSection />
+    </div>
+  );
+};
+
 export const Logo = () => {
   return (
     <Link
@@ -147,30 +170,3 @@ export const LogoIcon = () => {
     </Link>
   );
 };
-
-// Updated Dashboard component with conditional "Branch" button
-const Dashboard = ({ selectedLink }) => {
-  return (
-    <div className="flex flex-1">
-      <div className="p-6 md:p-12 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-6 flex-1 w-full h-full">
-        {/* Conditionally render "Dealership" or "Settings" component based on selected sidebar link */}
-        {selectedLink === "Dealerships" && <DealershipDashboard />}
-        {selectedLink === "Settings" && <SettingsPage />}{" "}
-        {/* Render SettingsPage when selected */}
-        <div className="flex gap-6">
-          {[...new Array(4)].map((_, i) => (
-            <div key={"first-array" + i}></div>
-          ))}
-        </div>
-        <div className="flex gap-6 flex-1">
-          {[...new Array(2)].map((_, i) => (
-            <div key={"second-array" + i}></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// New SettingsPage Component (a placeholder for your Settings content)
- 
