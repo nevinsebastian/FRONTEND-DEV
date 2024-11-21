@@ -3,9 +3,8 @@ import { IconHome, IconNewSection } from "@tabler/icons-react";
 import InsertChartOutlinedOutlinedIcon from "@mui/icons-material/InsertChartOutlinedOutlined";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import HomeScreen from "./homescreen"; // Import the HomeScreen component
 
-// Screens for different tabs
-const HomeScreen = () => <div className="p-4">Welcome to Home Screen</div>;
 const CreateCustomerScreen = () => (
   <div className="p-4">Welcome to Create Customer Screen</div>
 );
@@ -20,7 +19,7 @@ const ProfileScreen = () => (
 );
 
 export function FloatingDockDemo() {
-  const [activeTab, setActiveTab] = useState("Home"); // State to track the active tab
+  const [activeTab, setActiveTab] = useState("Home");
 
   const links = [
     {
@@ -34,7 +33,7 @@ export function FloatingDockDemo() {
           }`}
         />
       ),
-      screen: <HomeScreen />,
+      screen: <HomeScreen />, // Render HomeScreen here
     },
     {
       title: "Create Customer",
@@ -92,7 +91,7 @@ export function FloatingDockDemo() {
 
   return (
     <div className="relative">
-      {/* Render the currently active screen */}
+      {/* Render the active screen */}
       <div className="pb-16">
         {links.find((link) => link.title === activeTab)?.screen}
       </div>
@@ -103,7 +102,7 @@ export function FloatingDockDemo() {
           {links.map((link, index) => (
             <button
               key={index}
-              onClick={() => setActiveTab(link.title)} // Update the active tab
+              onClick={() => setActiveTab(link.title)} // Change active tab
               className={`h-14 w-14 flex items-center justify-center rounded-md transition-transform 
                           duration-200 ${
                             activeTab === link.title
