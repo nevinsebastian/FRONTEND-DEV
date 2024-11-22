@@ -4,10 +4,9 @@ import InsertChartOutlinedOutlinedIcon from "@mui/icons-material/InsertChartOutl
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import HomeScreen from "./homescreen"; // Import the HomeScreen component
+import CreateCustomerScreen from "./CreateCustomerScreen";
 
-const CreateCustomerScreen = () => (
-  <div className="p-4">Welcome to Create Customer Screen</div>
-);
+
 const MessageScreen = () => (
   <div className="p-4">Welcome to Message Screen</div>
 );
