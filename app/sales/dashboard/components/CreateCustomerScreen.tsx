@@ -21,7 +21,6 @@ const CreateCustomerScreen = () => {
       setError("");
 
       try {
-        // Retrieve the token from localStorage
         const token = localStorage.getItem("auth_token");
 
         if (!token) {
@@ -65,10 +64,26 @@ const CreateCustomerScreen = () => {
     }));
   };
 
+  const handleFileChange = (fieldName: string, file: File) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [fieldName]: file,
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
-    // Handle form submission logic here
+
+    const formDataToSubmit = new FormData();
+    for (const [key, value] of Object.entries(formData)) {
+      formDataToSubmit.append(
+        key,
+        value instanceof File ? value : JSON.stringify(value)
+      );
+    }
+
+    console.log("Form Data to Submit:", formDataToSubmit);
+    // Perform API submission with `formDataToSubmit`
   };
 
   if (loading) return <div>Loading...</div>;
@@ -86,14 +101,47 @@ const CreateCustomerScreen = () => {
             >
               {field.name} {field.is_required && "*"}
             </label>
-            <input
-              type={field.field_type}
-              id={field.name}
-              name={field.name}
-              required={field.is_required}
-              className="border p-2 w-full rounded"
-              onChange={(e) => handleInputChange(field.name, e.target.value)}
-            />
+
+            {field.filled_by === "sales_executive" ? (
+              // Editable fields
+              field.field_type === "image" ? (
+                <input
+                  type="file"
+                  id={field.name}
+                  name={field.name}
+                  required={field.is_required}
+                  accept="image/*"
+                  className="border p-2 w-full rounded"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleFileChange(field.name, e.target.files[0]);
+                    }
+                  }}
+                />
+              ) : (
+                <input
+                  type={field.field_type}
+                  id={field.name}
+                  name={field.name}
+                  required={field.is_required}
+                  className="border p-2 w-full rounded"
+                  onChange={(e) =>
+                    handleInputChange(field.name, e.target.value)
+                  }
+                />
+              )
+            ) : (
+              // Non-editable fields
+              <input
+                type={field.field_type === "image" ? "text" : field.field_type}
+                id={field.name}
+                name={field.name}
+                value={formData[field.name] || ""}
+                placeholder="To be filled by customer"
+                disabled
+                className="border p-2 w-full rounded text-gray-500"
+              />
+            )}
           </div>
         ))}
         <button
