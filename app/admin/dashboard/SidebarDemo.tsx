@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import AddDealership from "@/components/dialogus/AddDealership";
 import DealershipDashboard from "./DealershipDashboard";
 import SettingsPage from "../settings/settings";
+import router from "next/router";
 
 export function SidebarDemo() {
   const [open, setOpen] = useState(false);
@@ -63,6 +64,12 @@ export function SidebarDemo() {
       icon: (
         <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
       ),
+      action: () => {
+        // Clear localStorage and navigate to login
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("role");
+        router.push("/login"); // Redirect to login page
+      },
     },
   ];
 

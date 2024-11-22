@@ -17,21 +17,35 @@ const CreateCustomerScreen = () => {
 
   useEffect(() => {
     const fetchFormFields = async () => {
+      setLoading(true);
+      setError("");
+
       try {
+        // Retrieve the token from localStorage
+        const token = localStorage.getItem("auth_token");
+
+        if (!token) {
+          throw new Error("No token found. Please log in again.");
+        }
+
         const response = await fetch(
           "http://3.111.52.81:8000/form-builder/forms/active",
           {
             method: "GET",
             headers: {
               accept: "application/json",
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJleHAiOjE3MzIyNDc3MTN9.nOgBdatcGy830HjBNPOfdUu18GmdQe1K-Wb9Y5-y7UE",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
+
         if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error("Unauthorized. Please log in again.");
+          }
           throw new Error(`Error: ${response.statusText}`);
         }
+
         const data: FormField[] = await response.json();
         setFormFields(data);
       } catch (err: any) {
