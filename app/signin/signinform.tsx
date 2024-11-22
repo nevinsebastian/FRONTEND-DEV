@@ -91,6 +91,12 @@ export function SignIn() {
           <div className="mt-4 text-red-600">{errorMessage}</div>
         )}
       </form>
+      <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
+        Didnt activate account?{" "}
+        <Link href="/activate" className="text-blue-500 hover:underline">
+          Activate
+        </Link>
+      </p>
     </div>
   );
 }
