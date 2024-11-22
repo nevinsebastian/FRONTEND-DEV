@@ -5,7 +5,7 @@ import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutline
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import HomeScreen from "./homescreen"; // Import the HomeScreen component
 import CreateCustomerScreen from "./CreateCustomerScreen";
-
+import ProfileScreen from "./ProfileScreen";
 
 const MessageScreen = () => (
   <div className="p-4">Welcome to Message Screen</div>
@@ -13,9 +13,7 @@ const MessageScreen = () => (
 const PerformanceScreen = () => (
   <div className="p-4">Welcome to Performance Screen</div>
 );
-const ProfileScreen = () => (
-  <div className="p-4">Welcome to Profile Screen</div>
-);
+
 
 export function FloatingDockDemo() {
   const [activeTab, setActiveTab] = useState("Home");
