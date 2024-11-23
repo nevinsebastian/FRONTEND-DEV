@@ -163,7 +163,8 @@ export const LogoIcon = () => {
 };
 
 // Updated Dashboard component with conditional "Branch" button
-const Dashboard = ({ selectedLink }) => {
+// Updated Dashboard component with explicit type for `selectedLink`
+const Dashboard: React.FC<{ selectedLink: string }> = ({ selectedLink }) => {
   return (
     <div className="flex flex-1">
       <div className="p-6 md:p-12 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-6 flex-1 w-full h-full">
@@ -185,6 +186,7 @@ const Dashboard = ({ selectedLink }) => {
     </div>
   );
 };
+
 
 // New SettingsPage Component (a placeholder for your Settings content)
 
