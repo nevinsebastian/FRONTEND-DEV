@@ -8,7 +8,7 @@ export const createFormInstance = async (customerName: string) => {
   }
 
   const response = await fetch(
-    `http://3.111.52.81:8000/form-builder/forms/create?customer_name=${customerName}`,
+    `https://3.111.52.81:8000/form-builder/forms/create?customer_name=${customerName}`,
     {
       method: "POST",
       headers: {
@@ -34,7 +34,7 @@ export const fetchFormFields = async (formInstanceId: number) => {
   }
 
   const response = await fetch(
-    "http://3.111.52.81:8000/form-builder/forms/active",
+    "https://3.111.52.81:8000/form-builder/forms/active",
     {
       method: "GET",
       headers: {
@@ -60,7 +60,7 @@ export const submitFormData = async (formInstanceId: number, formData: Record<st
   }
 
   const response = await fetch(
-    `http://3.111.52.81:8000/form-builder/forms/${formInstanceId}/submit/sales`,
+    `https://3.111.52.81:8000/form-builder/forms/${formInstanceId}/submit/sales`,
     {
       method: "POST",
       headers: {
