@@ -1,7 +1,9 @@
-// CreateCustomerScreen.tsx
-
 import React, { useState, useEffect } from "react";
-import { createFormInstance, fetchFormFields } from "../api/apiService";
+import {
+  createFormInstance,
+  fetchFormFields,
+  submitFormData,
+} from "../api/apiService";
 
 interface FormField {
   name: string;
@@ -12,6 +14,15 @@ interface FormField {
   id: number;
 }
 
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+};
+
 const CreateCustomerScreen = () => {
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formData, setFormData] = useState<Record<string, any>>({});
@@ -20,6 +31,7 @@ const CreateCustomerScreen = () => {
   const [customerName, setCustomerName] = useState("");
   const [formInstanceId, setFormInstanceId] = useState<number | null>(null);
   const [nameSubmitted, setNameSubmitted] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     const fetchFormData = async () => {
@@ -69,19 +81,37 @@ const CreateCustomerScreen = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formDataToSubmit = new FormData();
-    for (const [key, value] of Object.entries(formData)) {
-      formDataToSubmit.append(
-        key,
-        value instanceof File ? value : JSON.stringify(value)
-      );
+    if (!formInstanceId) {
+      setError("Form instance ID is missing. Please try again.");
+      return;
     }
 
-    console.log("Form Data to Submit:", formDataToSubmit);
-    // Perform API submission with `formDataToSubmit`
+    const formDataToSubmit: Record<string, any> = {};
+    for (const [key, value] of Object.entries(formData)) {
+      // Ensure files are converted to base64 if required by the API
+      if (value instanceof File) {
+        const base64 = await fileToBase64(value);
+        formDataToSubmit[key] = base64;
+      } else {
+        formDataToSubmit[key] = value;
+      }
+    }
+
+    setLoading(true);
+    setError("");
+    setSuccessMessage("");
+    try {
+      const response = await submitFormData(formInstanceId, formDataToSubmit);
+      setSuccessMessage("Form submitted successfully!");
+      console.log("Submission Response:", response);
+    } catch (err: any) {
+      setError(err.message || "Failed to submit the form");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) return <div>Loading...</div>;
@@ -179,6 +209,10 @@ const CreateCustomerScreen = () => {
           >
             Submit
           </button>
+          {error && <div className="text-red-500 mt-2">{error}</div>}
+          {successMessage && (
+            <div className="text-green-500 mt-2">{successMessage}</div>
+          )}
         </form>
       )}
     </div>

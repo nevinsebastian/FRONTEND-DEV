@@ -51,3 +51,30 @@ export const fetchFormFields = async (formInstanceId: number) => {
   const data = await response.json();
   return data; // Return the form fields data
 };
+
+export const submitFormData = async (formInstanceId: number, formData: Record<string, any>) => {
+  const token = localStorage.getItem("auth_token");
+
+  if (!token) {
+    throw new Error("No token found. Please log in again.");
+  }
+
+  const response = await fetch(
+    `http://3.111.52.81:8000/form-builder/forms/${formInstanceId}/submit/sales`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData), // Send data as JSON
+    }
+  );
+
+  if (!response.ok) {
+    const errorDetails = await response.json();
+    throw new Error(errorDetails.detail || "Failed to submit the form data");
+  }
+
+  return await response.json();
+};
