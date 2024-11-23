@@ -57,7 +57,7 @@ export const activateEmployee = async (data: {
   phone_number: string;
 }) => {
   try {
-    const response = await fetch("http://3.111.52.81:8000/employees/activate", {
+    const response = await fetch("https://3.111.52.81:8000/employees/activate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
