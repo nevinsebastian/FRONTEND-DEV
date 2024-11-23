@@ -158,7 +158,15 @@ const BottomGradient = () => {
   );
 };
 
-const LabelInputContainer = ({ children, className }) => {
+import { ReactNode } from "react";
+
+const LabelInputContainer = ({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   return (
     <div className={cn("flex flex-col space-y-2 w-full", className)}>
       {children}
