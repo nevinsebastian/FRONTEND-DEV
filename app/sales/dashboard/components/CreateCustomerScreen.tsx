@@ -1,4 +1,7 @@
+// CreateCustomerScreen.tsx
+
 import React, { useState, useEffect } from "react";
+import { createFormInstance, fetchFormFields } from "../api/apiService";
 
 interface FormField {
   name: string;
@@ -18,79 +21,33 @@ const CreateCustomerScreen = () => {
   const [formInstanceId, setFormInstanceId] = useState<number | null>(null);
   const [nameSubmitted, setNameSubmitted] = useState(false);
 
-  // Fetch form fields after getting form_instance_id
   useEffect(() => {
-    const fetchFormFields = async () => {
+    const fetchFormData = async () => {
       if (formInstanceId) {
         setLoading(true);
-        setError("");
         try {
-          const token = localStorage.getItem("auth_token");
-
-          if (!token) {
-            throw new Error("No token found. Please log in again.");
-          }
-
-          const response = await fetch(
-            "http://3.111.52.81:8000/form-builder/forms/active",
-            {
-              method: "GET",
-              headers: {
-                accept: "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch form fields");
-          }
-
-          const data: FormField[] = await response.json();
-          setFormFields(data); // Set fetched form fields
-        } catch (err: any) {
-          setError(err.message || "Failed to fetch form fields");
+          const fields = await fetchFormFields(formInstanceId);
+          setFormFields(fields);
+        } catch (err) {
+          setError("Failed to fetch form fields");
         } finally {
           setLoading(false);
         }
       }
     };
 
-    fetchFormFields();
+    fetchFormData();
   }, [formInstanceId]);
 
-  // Handle customer name submission to get form instance ID
   const handleCustomerNameSubmit = async () => {
     setLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("auth_token");
-
-      if (!token) {
-        throw new Error("No token found. Please log in again.");
-      }
-
-      const response = await fetch(
-        `http://3.111.52.81:8000/form-builder/forms/create?customer_name=${customerName}`,
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to create form instance");
-      }
-
-      const data = await response.json();
-      const instanceId = data.form_instance_id;
-      setFormInstanceId(instanceId); // Save form_instance_id
-      localStorage.setItem("form_instance_id", String(instanceId)); // Save instanceId in localStorage
-      console.log("Form Instance ID:", instanceId); // Log instance ID to console
-      setNameSubmitted(true); // After successful submission, show the form fields
+      const instanceId = await createFormInstance(customerName);
+      setFormInstanceId(instanceId);
+      localStorage.setItem("form_instance_id", String(instanceId));
+      console.log("Form Instance ID:", instanceId);
+      setNameSubmitted(true);
     } catch (err: any) {
       setError(err.message || "Failed to create form instance");
     } finally {
@@ -133,7 +90,6 @@ const CreateCustomerScreen = () => {
     <div className="p-4">
       <h1>Create Customer</h1>
       {!nameSubmitted ? (
-        // Show customer name input first
         <div>
           <label
             htmlFor="customerName"
@@ -160,7 +116,6 @@ const CreateCustomerScreen = () => {
           {error && <div className="text-red-500 mt-2">{error}</div>}
         </div>
       ) : (
-        // After form instance is created, show dynamic form fields
         <form onSubmit={handleSubmit}>
           <h2>Customer Form</h2>
           {formFields.length > 0 ? (
@@ -174,7 +129,6 @@ const CreateCustomerScreen = () => {
                 </label>
 
                 {field.filled_by === "sales_executive" ? (
-                  // Editable fields (image or text input)
                   field.field_type === "image" ? (
                     <input
                       type="file"
@@ -202,7 +156,6 @@ const CreateCustomerScreen = () => {
                     />
                   )
                 ) : (
-                  // Non-editable fields
                   <input
                     type={
                       field.field_type === "image" ? "text" : field.field_type
