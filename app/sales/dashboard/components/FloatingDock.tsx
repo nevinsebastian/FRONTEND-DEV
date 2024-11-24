@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
+
 import { IconHome, IconNewSection } from "@tabler/icons-react";
 import InsertChartOutlinedOutlinedIcon from "@mui/icons-material/InsertChartOutlinedOutlined";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import HomeScreen from "./homescreen"; // Import the HomeScreen component
+import HomeScreen from "./homescreen";
 import CreateCustomerScreen from "./CreateCustomerScreen";
 import ProfileScreen from "./ProfileScreen";
 import ChatScreen from "./MessageScreen";
