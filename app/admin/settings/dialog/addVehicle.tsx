@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addVehicle } from "../api/addVehicle"; // Directly import the API function
+import { addVehicle } from "../api/addVehicle"; // Import the addVehicle API function
+import { useToast } from "@/components/hooks/use-toast"; // Import the toast hook
 
 export function AddVehicle() {
   const [vehicleData, setVehicleData] = useState({
@@ -23,6 +24,9 @@ export function AddVehicle() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize the showToast function
+  const { showToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,16 +42,26 @@ export function AddVehicle() {
     setError(null);
 
     try {
-      await addVehicle(vehicleData); // Call the API function directly
-      // Reset form or handle success feedback
-      setVehicleData({
-        name: "",
-        first_service_time: "",
-        service_kms: "",
-        total_price: "",
-      });
+      const response = await addVehicle(vehicleData); // Call the API function to add the vehicle
+
+      if (response.ok) {
+        // Check if the response is successful
+        showToast("Vehicle added successfully!", "success");
+        setVehicleData({
+          name: "",
+          first_service_time: "",
+          service_kms: "",
+          total_price: "",
+        });
+      } else {
+        // Handle error if response is not successful
+        const errorMsg = response.statusText || "Failed to add vehicle.";
+        showToast(errorMsg, "error");
+      }
     } catch (err) {
+      console.error(err);
       setError("Failed to add vehicle.");
+      showToast("An error occurred while adding the vehicle.", "error");
     } finally {
       setIsLoading(false);
     }
