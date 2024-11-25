@@ -76,7 +76,35 @@ export const submitFormData = async (formInstanceId: number, formData: Record<st
     throw new Error(errorDetails.detail || "Failed to submit the form data");
   }
 
-  return await response.json();
+  const responseData = await response.json();
+
+  // Extract and return form_instance_id from the response body
+  const formInstanceIdFromResponse = responseData.form_instance_id;
+  
+  return formInstanceIdFromResponse;
 };
 
 
+
+// apiServices.ts
+
+export const fetchVehicles = async (token: string): Promise<any[]> => {
+  try {
+    const response = await fetch("https://3.111.52.81:8000/vehicle-data/vehicles", {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch vehicles");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "Error fetching vehicles");
+  }
+};

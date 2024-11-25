@@ -3,6 +3,7 @@ import {
   createFormInstance,
   fetchFormFields,
   submitFormData,
+  fetchVehicles,
 } from "../api/apiService";
 
 interface FormField {
@@ -32,6 +33,22 @@ const CreateCustomerScreen = () => {
   const [formInstanceId, setFormInstanceId] = useState<number | null>(null);
   const [nameSubmitted, setNameSubmitted] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+
+  // New state for vehicles and selected vehicle
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
+
+  // Fetch vehicles when the component mounts
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token"); // Fetch auth token from localStorage
+    if (token) {
+      setLoading(true);
+      fetchVehicles(token)
+        .then((data) => setVehicles(data))
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchFormData = async () => {
@@ -104,9 +121,17 @@ const CreateCustomerScreen = () => {
     setError("");
     setSuccessMessage("");
     try {
-      const response = await submitFormData(formInstanceId, formDataToSubmit);
+      // Submit form data and get the form_instance_id from the response
+      const formInstanceIdFromApi = await submitFormData(
+        formInstanceId,
+        formDataToSubmit
+      );
+
+      // Optionally store the form_instance_id in localStorage or state
+      localStorage.setItem("form_instance_id", String(formInstanceIdFromApi));
+
       setSuccessMessage("Form submitted successfully!");
-      console.log("Submission Response:", response);
+      console.log("Form instance ID from API response:", formInstanceIdFromApi);
     } catch (err: any) {
       setError(err.message || "Failed to submit the form");
     } finally {
@@ -148,6 +173,32 @@ const CreateCustomerScreen = () => {
       ) : (
         <form onSubmit={handleSubmit}>
           <h2>Customer Form</h2>
+
+          {/* Dropdown for Vehicle Selection */}
+          <div className="mb-4">
+            <label
+              htmlFor="vehicle"
+              className="block text-gray-700 font-medium"
+            >
+              Vehicle
+            </label>
+            <select
+              id="vehicle"
+              name="vehicle"
+              className="border p-2 w-full rounded"
+              value={selectedVehicle || ""}
+              onChange={(e) => setSelectedVehicle(e.target.value)}
+            >
+              <option value="">Select Vehicle</option>
+              {vehicles.map((vehicle) => (
+                <option key={vehicle.id} value={vehicle.id}>
+                  {vehicle.name}
+                </option>
+              ))}
+            </select>
+            {error && <div className="text-red-500 mt-2">{error}</div>}
+          </div>
+
           {formFields.length > 0 ? (
             formFields.map((field) => (
               <div key={field.id} className="mb-4">
@@ -209,7 +260,6 @@ const CreateCustomerScreen = () => {
           >
             Submit
           </button>
-          {error && <div className="text-red-500 mt-2">{error}</div>}
           {successMessage && (
             <div className="text-green-500 mt-2">{successMessage}</div>
           )}
