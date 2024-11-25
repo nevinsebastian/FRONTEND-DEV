@@ -33,6 +33,7 @@ const CreateCustomerScreen = () => {
   const [formInstanceId, setFormInstanceId] = useState<number | null>(null);
   const [nameSubmitted, setNameSubmitted] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [formLink, setFormLink] = useState<string | null>(null); // To hold the generated form link
 
   // New state for vehicles and selected vehicle
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -77,6 +78,9 @@ const CreateCustomerScreen = () => {
       localStorage.setItem("form_instance_id", String(instanceId));
       console.log("Form Instance ID:", instanceId);
       setNameSubmitted(true);
+      // Generate the link with the form instance ID
+      const generatedLink = `http://localhost:3000/customer/${instanceId}`;
+      setFormLink(generatedLink); // Store the generated link
     } catch (err: any) {
       setError(err.message || "Failed to create form instance");
     } finally {
@@ -132,6 +136,10 @@ const CreateCustomerScreen = () => {
 
       setSuccessMessage("Form submitted successfully!");
       console.log("Form instance ID from API response:", formInstanceIdFromApi);
+
+      // Generate the link with the form instance ID after submission
+      const generatedLink = `http://localhost:3000/customer/${formInstanceIdFromApi}`;
+      setFormLink(generatedLink); // Store the generated link
     } catch (err: any) {
       setError(err.message || "Failed to submit the form");
     } finally {
@@ -264,6 +272,16 @@ const CreateCustomerScreen = () => {
             <div className="text-green-500 mt-2">{successMessage}</div>
           )}
         </form>
+      )}
+
+      {/* Display the generated link */}
+      {formLink && (
+        <div className="mt-4">
+          <h3>Customer Form Link</h3>
+          <a href={formLink} target="_blank" rel="noopener noreferrer">
+            {formLink}
+          </a>
+        </div>
       )}
     </div>
   );
