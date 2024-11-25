@@ -27,11 +27,11 @@ export function TabsDemo() {
       ),
     },
     {
-      title: "Playground",
-      value: "playground",
+      title: "Vehicle",
+      value: "Vehicle",
       content: (
         <div className="w-full h-full overflow-auto relative rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Playground tab</p>
+          <p>Vehicle</p>
         </div>
       ),
     },
