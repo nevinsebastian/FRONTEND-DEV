@@ -2,7 +2,9 @@
 
 import { Tabs } from "@/components/ui/tabs";
 import { CustomFormList, CreateForm } from "@/components/custom-form"; // Import the components
-
+import { TableDemo } from "./components/table";
+import { Button } from "@/components/ui/button";
+import { AddVehicle } from "./dialog/addVehicle";
 export function TabsDemo() {
   const tabs = [
     {
@@ -21,9 +23,7 @@ export function TabsDemo() {
       title: "Services",
       value: "services",
       content: (
-        <div className="w-full h-full overflow-auto relative rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Services tab</p>
-        </div>
+        <div className="w-full h-full overflow-auto relative rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900"></div>
       ),
     },
     {
@@ -31,7 +31,11 @@ export function TabsDemo() {
       value: "Vehicle",
       content: (
         <div className="w-full h-full overflow-auto relative rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Vehicle</p>
+          <div className="flex items-center justify-between mb-4">
+            <p>Vehicle List</p>
+            <AddVehicle />
+          </div>
+          <TableDemo />
         </div>
       ),
     },

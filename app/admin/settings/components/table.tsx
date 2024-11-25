@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,79 +11,67 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { fetchVehicles } from "../api/table";
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
+interface Vehicle {
+  id: number;
+  name: string;
+  first_service_time: string;
+  service_kms: number;
+  total_price: number;
+}
 
 export function TableDemo() {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadVehicles = async () => {
+      try {
+        const data = await fetchVehicles();
+        setVehicles(data);
+      } catch (err) {
+        setError("Failed to fetch vehicle data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadVehicles();
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
   return (
     <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
+      <TableCaption>A list of vehicles in your dealership.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="w-[100px]">Vehicle Name</TableHead>
+          <TableHead>First Service Time</TableHead>
+          <TableHead>Service KMs</TableHead>
+          <TableHead className="text-right">Total Price</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+        {vehicles.map((vehicle) => (
+          <TableRow key={vehicle.id}>
+            <TableCell className="font-medium">{vehicle.name}</TableCell>
+            <TableCell>{vehicle.first_service_time} days</TableCell>
+            <TableCell>{vehicle.service_kms} kms</TableCell>
+            <TableCell className="text-right">₹{vehicle.total_price}</TableCell>
           </TableRow>
         ))}
       </TableBody>
       <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
+        <TableRow></TableRow>
       </TableFooter>
     </Table>
   );
