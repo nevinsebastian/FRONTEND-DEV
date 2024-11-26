@@ -24,6 +24,7 @@ const FormPage = () => {
 
   const [fields, setFields] = useState<Field[]>([]);
   const [salesData, setSalesData] = useState<Record<string, string>>({});
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -58,6 +59,13 @@ const FormPage = () => {
           {}
         );
         setSalesData(salesDataMapped);
+
+        // Initialize form data with sales data or empty strings
+        const initialFormData = uniqueFields.reduce((acc, field) => {
+          acc[field.name] = salesDataMapped[field.name] || "";
+          return acc;
+        }, {} as Record<string, string>);
+        setFormData(initialFormData);
       } catch (err) {
         setError("Failed to fetch data.");
       } finally {
@@ -68,6 +76,11 @@ const FormPage = () => {
     loadData();
   }, [formInstanceId]);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
@@ -77,29 +90,28 @@ const FormPage = () => {
       <form>
         {fields.map((field) => {
           const isSalesField = salesData[field.name] !== undefined;
-          const fieldValue = isSalesField ? salesData[field.name] : "";
+          const fieldValue = isSalesField
+            ? salesData[field.name]
+            : formData[field.name] || "";
 
           return (
             <div key={field.id} className="mb-4">
-              <label className="block mb-1 font-medium">{field.name} </label>
+              <label className="block mb-1 font-medium">
+                {field.name}{" "}
+                {field.is_required && <span className="text-red-500">*</span>}
+              </label>
               {field.field_type === "text" && (
                 <input
                   type="text"
                   name={field.name}
-                  value={fieldValue}
-                  disabled={isSalesField || field.filled_by !== "customer"} // Disable if it's a sales field or not customer-filled
+                  value={isSalesField ? undefined : formData[field.name]} // Use undefined for sales fields
+                  defaultValue={isSalesField ? fieldValue : undefined} // Use defaultValue for static fields
+                  onChange={!isSalesField ? handleChange : undefined} // Attach onChange only for editable fields
+                  required={field.is_required}
+                  readOnly={isSalesField} // Explicitly set readOnly for sales fields
                   className={`border p-2 w-full rounded ${
-                    isSalesField || field.filled_by !== "customer"
-                      ? "bg-red-800	 cursor-not-allowed"
-                      : ""
+                    isSalesField ? "bg-red-600 cursor-not-allowed" : ""
                   }`}
-                  onChange={(e) =>
-                    !isSalesField &&
-                    setSalesData((prev) => ({
-                      ...prev,
-                      [field.name]: e.target.value,
-                    }))
-                  }
                 />
               )}
               {field.field_type === "image" && (
@@ -107,7 +119,7 @@ const FormPage = () => {
                   type="file"
                   accept="image/*"
                   name={field.name}
-                  disabled={isSalesField || field.filled_by !== "customer"} // Disable if it's a sales field or not customer-filled
+                  disabled={isSalesField || field.filled_by !== "customer"}
                   className={`border p-2 w-full rounded ${
                     isSalesField || field.filled_by !== "customer"
                       ? "bg-gray-200 cursor-not-allowed"
@@ -119,12 +131,13 @@ const FormPage = () => {
                 <input
                   type="date"
                   name={field.name}
-                  value={fieldValue}
-                  disabled={isSalesField || field.filled_by !== "customer"} // Disable if it's a sales field or not customer-filled
+                  value={isSalesField ? undefined : formData[field.name]} // Use undefined for sales fields
+                  defaultValue={isSalesField ? fieldValue : undefined} // Use defaultValue for static fields
+                  onChange={!isSalesField ? handleChange : undefined} // Attach onChange only for editable fields
+                  required={field.is_required}
+                  readOnly={isSalesField} // Explicitly set readOnly for sales fields
                   className={`border p-2 w-full rounded ${
-                    isSalesField || field.filled_by !== "customer"
-                      ? "bg-gray-200 cursor-not-allowed"
-                      : ""
+                    isSalesField ? "bg-gray-200 cursor-not-allowed" : ""
                   }`}
                 />
               )}
