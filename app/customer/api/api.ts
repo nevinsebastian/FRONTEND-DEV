@@ -11,3 +11,13 @@ export const fetchFormFields = async (formId: number) => {
     throw error;
   }
 };
+
+export const fetchSalesData = async (formInstanceId: number) => {
+  const response = await fetch(
+    `https://3.111.52.81:8000/form-builder/forms/${formInstanceId}/sales-data`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch sales data.");
+  }
+  return response.json();
+};
