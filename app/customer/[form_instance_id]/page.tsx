@@ -2,9 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { fetchFormFields, fetchSalesData } from "../api/api";
+import {
+  fetchFormFields,
+  fetchSalesData,
+  submitCustomerData,
+} from "../api/api";
 
 interface Field {
+  readOnly: any;
   name: string;
   field_type: string;
   is_required: boolean;
@@ -81,13 +86,45 @@ const FormPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formInstanceId) {
+      setError("Form instance ID is missing.");
+      return;
+    }
+
+    // Filter out the non-editable fields (read-only or sales fields)
+    const editableData = Object.keys(formData).reduce((acc, key) => {
+      const field = fields.find((f) => f.name === key);
+      const isSalesField = salesData[key] !== undefined;
+      if (field && !isSalesField && !field.readOnly) {
+        acc[key] = formData[key];
+      }
+      return acc;
+    }, {} as Record<string, string>);
+
+    // Log the data being sent to the endpoint
+    console.log("Submitting the following data to the endpoint:", editableData);
+
+    try {
+      await submitCustomerData(Number(formInstanceId), editableData);
+      alert("Form submitted successfully!");
+    } catch (error: any) {
+      setError(
+        error.response?.data?.detail ||
+          "An error occurred while submitting the form."
+      );
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="p-4">
       <h1 className="text-lg font-bold mb-4">Customer Form</h1>
-      <form>
+      <form onSubmit={handleSubmit}>
         {fields.map((field) => {
           const isSalesField = salesData[field.name] !== undefined;
           const fieldValue = isSalesField
@@ -96,10 +133,7 @@ const FormPage = () => {
 
           return (
             <div key={field.id} className="mb-4">
-              <label className="block mb-1 font-medium">
-                {field.name}{" "}
-                {field.is_required && <span className="text-red-500">*</span>}
-              </label>
+              <label className="block mb-1 font-medium">{field.name} </label>
               {field.field_type === "text" && (
                 <input
                   type="text"
