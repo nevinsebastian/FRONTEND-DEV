@@ -35,11 +35,9 @@ const CreateCustomerScreen = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [formLink, setFormLink] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("auth_token");
     if (storedToken) setToken(storedToken);
   }, []);
 
@@ -57,7 +55,6 @@ const CreateCustomerScreen = () => {
         }
       }
     };
-
     fetchFormData();
   }, [formInstanceId]);
 
@@ -78,24 +75,24 @@ const CreateCustomerScreen = () => {
     }
   };
 
-  const handleVehicleSelect = (vehicleId: string, totalPrice: number) => {
-    setSelectedVehicle(vehicleId);
-    setTotalPrice(totalPrice);
-    handleInputChange("totalPrice", totalPrice);
+  const handleVehicleSelect = (vehicleName: string, totalPrice: number) => {
+    setFormData((prevData) => {
+      const updatedData = { ...prevData, totalPrice };
+      formFields.forEach((field) => {
+        if (field.field_type === "vehicle") {
+          updatedData[field.name] = vehicleName; // Store the vehicle name instead of ID
+        }
+      });
+      return updatedData;
+    });
+    localStorage.setItem(
+      "selected_vehicle",
+      JSON.stringify({ vehicleName, totalPrice })
+    );
   };
 
   const handleInputChange = (fieldName: string, value: any) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [fieldName]: value,
-    }));
-  };
-
-  const handleFileChange = (fieldName: string, file: File) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [fieldName]: file,
-    }));
+    setFormData((prevData) => ({ ...prevData, [fieldName]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,7 +120,6 @@ const CreateCustomerScreen = () => {
         formInstanceId,
         formDataToSubmit
       );
-      localStorage.setItem("form_instance_id", String(formInstanceIdFromApi));
       setSuccessMessage("Form submitted successfully!");
       const generatedLink = `http://localhost:3000/customer/${formInstanceIdFromApi}`;
       setFormLink(generatedLink);
@@ -138,7 +134,7 @@ const CreateCustomerScreen = () => {
 
   return (
     <div className="p-4">
-      <h1>Create Customer</h1>
+      <h1 className="text-xl font-bold mb-4">Create Customer</h1>
       {!nameSubmitted ? (
         <div>
           <label
@@ -150,14 +146,12 @@ const CreateCustomerScreen = () => {
           <input
             type="text"
             id="customerName"
-            name="customerName"
             className="border p-2 w-full rounded"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
             required
           />
           <button
-            type="button"
             onClick={handleCustomerNameSubmit}
             className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
           >
@@ -167,55 +161,36 @@ const CreateCustomerScreen = () => {
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-          <h2>Customer Form</h2>
-
-          {/* VehicleDropdown component */}
+          <h2 className="text-lg font-semibold mb-2">Customer Form</h2>
           <div className="mb-4">
-            <label
-              htmlFor="vehicle"
-              className="block text-gray-700 font-medium"
-            >
+            <label className="block text-gray-700 font-medium">
               Select Vehicle
             </label>
             <VehicleDropdown token={token} onSelect={handleVehicleSelect} />
           </div>
 
-          {/* Existing form fields */}
-          {formFields.length > 0 ? (
-            formFields.map((field) => (
-              <div key={field.id} className="mb-4">
-                <label
-                  htmlFor={field.name}
-                  className="block text-gray-700 font-medium"
-                >
-                  {field.name} {field.is_required && "*"}
-                </label>
-                {field.filled_by === "sales_executive" ? (
-                  <input
-                    type={field.field_type}
-                    id={field.name}
-                    name={field.name}
-                    required={field.is_required}
-                    className="border p-2 w-full rounded"
-                    onChange={(e) =>
-                      handleInputChange(field.name, e.target.value)
-                    }
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    id={field.name}
-                    name={field.name}
-                    value={formData[field.name] || ""}
-                    disabled
-                    className="border p-2 w-full rounded text-gray-500"
-                  />
-                )}
-              </div>
-            ))
-          ) : (
-            <div>Loading form fields...</div>
-          )}
+          {formFields.map((field) => (
+            <div key={field.id} className="mb-4">
+              <label
+                htmlFor={field.name}
+                className="block text-gray-700 font-medium"
+              >
+                {field.name} {field.is_required && "*"}
+              </label>
+              <input
+                type={
+                  field.field_type === "vehicle" ? "text" : field.field_type
+                }
+                id={field.name}
+                name={field.name}
+                required={field.is_required}
+                className="border p-2 w-full rounded"
+                value={formData[field.name] || ""}
+                onChange={(e) => handleInputChange(field.name, e.target.value)}
+                disabled={field.filled_by !== "sales_executive"}
+              />
+            </div>
+          ))}
 
           <button
             type="submit"
@@ -227,15 +202,6 @@ const CreateCustomerScreen = () => {
             <div className="text-green-500 mt-2">{successMessage}</div>
           )}
         </form>
-      )}
-
-      {formLink && (
-        <div className="mt-4">
-          <h3>Customer Form Link</h3>
-          <a href={formLink} target="_blank" rel="noopener noreferrer">
-            {formLink}
-          </a>
-        </div>
       )}
     </div>
   );

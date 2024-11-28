@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 interface VehicleDropdownProps {
-  onSelect: (vehicleId: string, totalPrice: number) => void;
+  onSelect: (vehicleName: string, totalPrice: number) => void;
 }
 
 const VehicleDropdown: React.FC<VehicleDropdownProps> = ({ onSelect }) => {
@@ -18,7 +18,6 @@ const VehicleDropdown: React.FC<VehicleDropdownProps> = ({ onSelect }) => {
   useEffect(() => {
     const fetchVehicles = async () => {
       if (!token) return;
-      console.log("Using token:", token); // Debug log
 
       try {
         const response = await fetch(
@@ -53,7 +52,7 @@ const VehicleDropdown: React.FC<VehicleDropdownProps> = ({ onSelect }) => {
     const vehicle = vehicles.find((v) => v.id.toString() === selectedId);
     if (vehicle) {
       setSelectedVehicle(vehicle);
-      onSelect(vehicle.id.toString(), vehicle.total_price);
+      onSelect(vehicle.name, vehicle.total_price); // Pass vehicle name
       localStorage.setItem("selected_vehicle", JSON.stringify(vehicle)); // Save to local storage
     }
   };
@@ -68,27 +67,13 @@ const VehicleDropdown: React.FC<VehicleDropdownProps> = ({ onSelect }) => {
           </option>
         ))}
       </select>
-
-      {/* Display ex-showroom price if a vehicle is selected */}
       {selectedVehicle && (
-        <div className="mt-4">
-          <h2>Selected Vehicle: {selectedVehicle.name}</h2>
-          <p>
-            Ex-Showroom Price: ₹{selectedVehicle.total_price.toLocaleString()}
-          </p>
+        <div className="mt-2">
+          <strong>Selected Vehicle:</strong> {selectedVehicle.name}
         </div>
       )}
     </div>
   );
 };
-
-// Define the Vehicle interface
-interface Vehicle {
-  id: number;
-  name: string;
-  first_service_time: string;
-  service_kms: number;
-  total_price: number;
-}
 
 export default VehicleDropdown;
