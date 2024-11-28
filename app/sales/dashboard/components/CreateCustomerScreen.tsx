@@ -35,6 +35,8 @@ const CreateCustomerScreen = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [formLink, setFormLink] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [vehicleTotalPrice, setVehicleTotalPrice] = useState<number>(0); // Store selected vehicle's total price
+  const [totalAmount, setTotalAmount] = useState<number>(0); // Store the sum of 'amount' fields (like tax, etc.)
 
   useEffect(() => {
     const storedToken = localStorage.getItem("auth_token");
@@ -89,10 +91,25 @@ const CreateCustomerScreen = () => {
       "selected_vehicle",
       JSON.stringify({ vehicleName, totalPrice })
     );
+    setVehicleTotalPrice(totalPrice); // Update the selected vehicle price
   };
 
   const handleInputChange = (fieldName: string, value: any) => {
-    setFormData((prevData) => ({ ...prevData, [fieldName]: value }));
+    setFormData((prevData) => {
+      const updatedData = { ...prevData, [fieldName]: value };
+
+      // Recalculate the total amount when an amount field changes
+      let newTotalAmount = totalAmount;
+
+      // Check if the field is an 'amount' field and update totalAmount
+      if (fieldName === "tax") {
+        const amountValue = parseFloat(value) || 0; // Ensure it's a number, defaulting to 0 if NaN
+        newTotalAmount = amountValue; // Update with the new value for the tax field
+      }
+
+      setTotalAmount(newTotalAmount); // Update the total amount state
+      return updatedData;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -128,6 +145,12 @@ const CreateCustomerScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCalculateTotal = () => {
+    // Calculate the total price: vehicleTotalPrice + sum of all "amount" fields (like tax)
+    const total = vehicleTotalPrice + totalAmount;
+    alert(`Total Price: ${total}`);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -192,6 +215,23 @@ const CreateCustomerScreen = () => {
             </div>
           ))}
 
+          {/* Display total price */}
+          <div className="mt-4">
+            <strong>Vehicle Total Price:</strong> {vehicleTotalPrice}
+          </div>
+
+          <div className="mt-4">
+            <strong>Sum of Amount Fields (Tax, etc.):</strong> {totalAmount}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCalculateTotal}
+            className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+          >
+            Calculate Total
+          </button>
+
           <button
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
@@ -199,8 +239,9 @@ const CreateCustomerScreen = () => {
             Submit
           </button>
           {successMessage && (
-            <div className="text-green-500 mt-2">{successMessage}</div>
+            <div className="text-green-500 mt-4">{successMessage}</div>
           )}
+          {error && <div className="text-red-500 mt-4">{error}</div>}
         </form>
       )}
     </div>
