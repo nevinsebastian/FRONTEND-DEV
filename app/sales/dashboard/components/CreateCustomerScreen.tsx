@@ -217,11 +217,12 @@ const CreateCustomerScreen = () => {
 
           {/* Display total price */}
           <div className="mt-4">
-            <strong>Vehicle Total Price:</strong> {vehicleTotalPrice}
+            <strong>Vehicle ex-showroom Price:</strong> {vehicleTotalPrice}
           </div>
 
           <div className="mt-4">
-            <strong>Sum of Amount Fields (Tax, etc.):</strong> {totalAmount}
+            <strong>Sum of Amount Fields (Tax, etc.):</strong>{" "}
+            {totalAmount + vehicleTotalPrice}
           </div>
 
           <button
