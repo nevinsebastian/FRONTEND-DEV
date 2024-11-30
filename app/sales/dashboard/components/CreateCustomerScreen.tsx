@@ -16,6 +16,12 @@ interface FormField {
   id: number;
 }
 
+interface Vehicle {
+  vehicleName: string;
+  totalPrice: number;
+  vehicleId: number;
+}
+
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -40,17 +46,8 @@ const CreateCustomerScreen = () => {
   // New state for amount details
   const [vehicleId, setVehicleId] = useState<number | null>(null);
   const [vehicleTotalPrice, setVehicleTotalPrice] = useState<number>(0);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
   const [amountPaid, setAmountPaid] = useState<number>(0);
   const [balanceAmount, setBalanceAmount] = useState<number>(0);
-
-  // Restored handleInputChange function
-  const handleInputChange = (fieldName: string, value: any) => {
-    setFormData((prevData) => {
-      const updatedData = { ...prevData, [fieldName]: value };
-      return updatedData;
-    });
-  };
 
   useEffect(() => {
     const storedToken = localStorage.getItem("auth_token");
@@ -91,11 +88,31 @@ const CreateCustomerScreen = () => {
     }
   };
 
+  console.log("Debugging formInstanceId and vehicleId:", {
+    formInstanceId,
+    vehicleId,
+  });
+
   const handleVehicleSelect = (
     vehicleName: string,
     totalPrice: number,
     vehicleId: number
   ) => {
+    // Set the vehicle details in the state
+    setVehicleId(vehicleId);
+    setVehicleTotalPrice(totalPrice);
+
+    // Store vehicle details in localStorage
+    localStorage.setItem(
+      "selected_vehicle",
+      JSON.stringify({ vehicleName, totalPrice, vehicleId })
+    );
+
+    // Calculate balance amount
+    const balance = totalPrice - amountPaid;
+    setBalanceAmount(balance);
+
+    // Update formData with the selected vehicle information
     setFormData((prevData) => {
       const updatedData = { ...prevData, totalPrice };
       formFields.forEach((field) => {
@@ -105,19 +122,6 @@ const CreateCustomerScreen = () => {
       });
       return updatedData;
     });
-
-    // Store vehicle details
-    setVehicleId(vehicleId);
-    setVehicleTotalPrice(totalPrice);
-
-    // Update balance amount when vehicle is selected
-    const balance = totalPrice - amountPaid;
-    setBalanceAmount(balance);
-
-    localStorage.setItem(
-      "selected_vehicle",
-      JSON.stringify({ vehicleName, totalPrice, vehicleId })
-    );
   };
 
   const handleAmountPaidChange = (amount: number) => {
@@ -129,14 +133,21 @@ const CreateCustomerScreen = () => {
   };
 
   const handleSubmitAmountDetails = async () => {
+    console.log("Submit button clicked"); // Add this log
     if (!formInstanceId || !vehicleId) {
       setError("Form instance or vehicle not selected");
+      console.error("Form instance or vehicle ID missing");
       return;
     }
 
     setLoading(true);
     setError("");
     try {
+      console.log("Submitting data...", {
+        vehicleTotalPrice,
+        amountPaid,
+        balanceAmount,
+      });
       await submitAmountData(
         formInstanceId,
         vehicleTotalPrice,
@@ -146,10 +157,13 @@ const CreateCustomerScreen = () => {
       );
 
       setSuccessMessage("Amount details submitted successfully!");
+      console.log("Submission successful");
     } catch (err: any) {
       setError(err.message || "Failed to submit amount details");
+      console.error("Error during submission:", err);
     } finally {
       setLoading(false);
+      console.log("Loading state set to false");
     }
   };
 
@@ -187,8 +201,6 @@ const CreateCustomerScreen = () => {
       setLoading(false);
     }
   };
-
-  // Rest of the component remains the same as in the previous submission...
 
   return (
     <div className="p-4">
@@ -256,13 +268,13 @@ const CreateCustomerScreen = () => {
 
             <div className="mb-4">
               <label className="block text-gray-700 font-medium">
-                Vehicle Total Price
+                Total Vehicle Price
               </label>
               <input
                 type="number"
                 value={vehicleTotalPrice}
+                className="border p-2 w-full rounded"
                 readOnly
-                className="border p-2 w-full rounded bg-black-200"
               />
             </div>
 
@@ -275,28 +287,25 @@ const CreateCustomerScreen = () => {
                 value={amountPaid}
                 onChange={(e) => handleAmountPaidChange(Number(e.target.value))}
                 className="border p-2 w-full rounded"
-                min="0"
-                max={vehicleTotalPrice}
               />
             </div>
 
             <div className="mb-4">
               <label className="block text-gray-700 font-medium">
                 Balance Amount
-              </label> 
+              </label>
               <input
                 type="number"
                 value={balanceAmount}
+                className="border p-2 w-full rounded"
                 readOnly
-                className="border p-2 w-full rounded bg-blsck-100"
               />
             </div>
 
             <button
               type="button"
               onClick={handleSubmitAmountDetails}
-              className="bg-green-500 text-white px-4 py-2 rounded mt-4"
-              disabled={!vehicleId || amountPaid < 0}
+              className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
             >
               Submit Amount Details
             </button>
@@ -310,9 +319,9 @@ const CreateCustomerScreen = () => {
           </button>
 
           {successMessage && (
-            <div className="text-green-500 mt-4">{successMessage}</div>
+            <div className="text-green-500 mt-2">{successMessage}</div>
           )}
-          {error && <div className="text-red-500 mt-4">{error}</div>}
+          {error && <div className="text-red-500 mt-2">{error}</div>}
         </form>
       )}
     </div>
