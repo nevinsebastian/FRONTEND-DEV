@@ -147,10 +147,11 @@ const CreateCustomerScreen = () => {
     }
   };
 
+  console.log(formInstanceId);
+
   const handleCalculateTotal = () => {
     // Calculate the total price: vehicleTotalPrice + sum of all "amount" fields (like tax)
     const total = vehicleTotalPrice + totalAmount;
-    alert(`Total Price: ${total}`);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -247,6 +248,7 @@ const CreateCustomerScreen = () => {
       )}
     </div>
   );
+  console.log(formData);
 };
 
 export default CreateCustomerScreen;
