@@ -108,3 +108,43 @@ export const fetchVehicles = async (token: string): Promise<any[]> => {
     throw new Error(error.message || "Error fetching vehicles");
   }
 };
+
+
+
+import axios from 'axios';
+
+const BASE_URL = 'https://3.111.52.81:8000'; // Your API base URL
+
+export const submitAmountData = async (
+  formInstanceId: number,
+  totalPrice: number,
+  amountPaid: number,
+  balanceAmount: number,
+  vehicleId: number
+) => {
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/form-builder/forms/amount-data/${formInstanceId}/submit/sales`,
+      null, // No request body
+      {
+        params: {
+          total_price: totalPrice,
+          amount_paid: amountPaid,
+          balance_amount: balanceAmount,
+          vehicle_id: vehicleId
+        },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'accept': 'application/json'
+        }
+      }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error submitting amount data:', error);
+    throw error;
+  }
+};
