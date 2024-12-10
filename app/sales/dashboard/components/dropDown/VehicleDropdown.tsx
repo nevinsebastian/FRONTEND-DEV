@@ -8,7 +8,11 @@ interface Vehicle {
 }
 
 interface VehicleDropdownProps {
-  onSelect: (vehicleName: string, totalPrice: number) => void;
+  onSelect: (
+    vehicleName: string,
+    totalPrice: number,
+    vehicleId: number
+  ) => void;
 }
 
 const VehicleDropdown: React.FC<VehicleDropdownProps> = ({ onSelect }) => {
@@ -19,7 +23,9 @@ const VehicleDropdown: React.FC<VehicleDropdownProps> = ({ onSelect }) => {
   useEffect(() => {
     // Retrieve token from local storage
     const storedToken = localStorage.getItem("auth_token");
-    setToken(storedToken);
+    if (storedToken) {
+      setToken(storedToken);
+    }
   }, []);
 
   useEffect(() => {
@@ -54,7 +60,9 @@ const VehicleDropdown: React.FC<VehicleDropdownProps> = ({ onSelect }) => {
       }
     };
 
-    fetchVehicles();
+    if (token) {
+      fetchVehicles();
+    }
   }, [token]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -63,8 +71,8 @@ const VehicleDropdown: React.FC<VehicleDropdownProps> = ({ onSelect }) => {
 
     if (vehicle) {
       setSelectedVehicle(vehicle);
-      onSelect(vehicle.name, vehicle.total_price); // Pass vehicle name and price
-      localStorage.setItem("selected_vehicle", JSON.stringify(vehicle)); // Save to local storage
+      onSelect(vehicle.name, vehicle.total_price, vehicle.id);
+      localStorage.setItem("selected_vehicle", JSON.stringify(vehicle));
     }
   };
 

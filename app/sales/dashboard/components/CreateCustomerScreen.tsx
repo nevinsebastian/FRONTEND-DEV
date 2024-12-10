@@ -34,6 +34,7 @@ const fileToBase64 = (file: File): Promise<string> => {
 const CreateCustomerScreen = () => {
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formData, setFormData] = useState<Record<string, any>>({});
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -53,6 +54,13 @@ const CreateCustomerScreen = () => {
     const storedToken = localStorage.getItem("auth_token");
     if (storedToken) setToken(storedToken);
   }, []);
+
+  const handleInputChange = (name: string, value: any) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
 
   useEffect(() => {
     const fetchFormData = async () => {
