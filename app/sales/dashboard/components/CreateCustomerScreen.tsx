@@ -50,16 +50,32 @@ const CreateCustomerScreen = () => {
   const [amountPaid, setAmountPaid] = useState<number>(0);
   const [balanceAmount, setBalanceAmount] = useState<number>(0);
 
+  // State to track total amount calculation
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+
   useEffect(() => {
     const storedToken = localStorage.getItem("auth_token");
     if (storedToken) setToken(storedToken);
   }, []);
 
   const handleInputChange = (name: string, value: any) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+    setFormData((prevFormData) => {
+      const updatedFormData = {
+        ...prevFormData,
+        [name]: value,
+      };
+
+      // Recalculate the total amount on input change
+      let newTotal = 0;
+      Object.entries(updatedFormData).forEach(([key, value]) => {
+        if (key.includes("amount") && !isNaN(value)) {
+          newTotal += Number(value);
+        }
+      });
+      setTotalAmount(newTotal);
+
+      return updatedFormData;
+    });
   };
 
   useEffect(() => {
@@ -96,21 +112,13 @@ const CreateCustomerScreen = () => {
     }
   };
 
-  console.log("Debugging formInstanceId and vehicleId:", {
-    formInstanceId,
-    vehicleId,
-  });
-
   const handleVehicleSelect = (
     vehicleName: string,
     totalPrice: number,
     vehicleId: number
   ) => {
-    // Set the vehicle details in the state
     setVehicleId(vehicleId);
     setVehicleTotalPrice(totalPrice);
-
-    // Store vehicle details in localStorage
     localStorage.setItem(
       "selected_vehicle",
       JSON.stringify({ vehicleName, totalPrice, vehicleId })
@@ -120,7 +128,6 @@ const CreateCustomerScreen = () => {
     const balance = totalPrice - amountPaid;
     setBalanceAmount(balance);
 
-    // Update formData with the selected vehicle information
     setFormData((prevData) => {
       const updatedData = { ...prevData, totalPrice };
       formFields.forEach((field) => {
@@ -134,28 +141,19 @@ const CreateCustomerScreen = () => {
 
   const handleAmountPaidChange = (amount: number) => {
     setAmountPaid(amount);
-
-    // Recalculate balance amount
     const balance = vehicleTotalPrice - amount;
     setBalanceAmount(balance);
   };
 
   const handleSubmitAmountDetails = async () => {
-    console.log("Submit button clicked"); // Add this log
     if (!formInstanceId || !vehicleId) {
       setError("Form instance or vehicle not selected");
-      console.error("Form instance or vehicle ID missing");
       return;
     }
 
     setLoading(true);
     setError("");
     try {
-      console.log("Submitting data...", {
-        vehicleTotalPrice,
-        amountPaid,
-        balanceAmount,
-      });
       await submitAmountData(
         formInstanceId,
         vehicleTotalPrice,
@@ -165,13 +163,10 @@ const CreateCustomerScreen = () => {
       );
 
       setSuccessMessage("Amount details submitted successfully!");
-      console.log("Submission successful");
     } catch (err: any) {
       setError(err.message || "Failed to submit amount details");
-      console.error("Error during submission:", err);
     } finally {
       setLoading(false);
-      console.log("Loading state set to false");
     }
   };
 
@@ -293,8 +288,8 @@ const CreateCustomerScreen = () => {
               <input
                 type="number"
                 value={amountPaid}
-                onChange={(e) => handleAmountPaidChange(Number(e.target.value))}
                 className="border p-2 w-full rounded"
+                onChange={(e) => handleAmountPaidChange(Number(e.target.value))}
               />
             </div>
 
@@ -310,27 +305,54 @@ const CreateCustomerScreen = () => {
               />
             </div>
 
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium">
+                Total Amount
+              </label>
+              <input
+                type="number"
+                value={totalAmount}
+                className="border p-2 w-full rounded"
+                readOnly
+              />
+            </div>
+
             <button
               type="button"
               onClick={handleSubmitAmountDetails}
-              className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
             >
               Submit Amount Details
             </button>
           </div>
 
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-          >
-            Submit Form
-          </button>
-
-          {successMessage && (
-            <div className="text-green-500 mt-2">{successMessage}</div>
-          )}
-          {error && <div className="text-red-500 mt-2">{error}</div>}
+          <div className="mt-6">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Submit Form
+            </button>
+            {error && <div className="text-red-500 mt-2">{error}</div>}
+            {successMessage && (
+              <div className="text-green-500 mt-2">{successMessage}</div>
+            )}
+          </div>
         </form>
+      )}
+
+      {formLink && (
+        <div className="mt-4">
+          <p className="font-semibold">Form Link:</p>
+          <a
+            href={formLink}
+            target="_blank"
+            className="text-blue-500"
+            rel="noopener noreferrer"
+          >
+            {formLink}
+          </a>
+        </div>
       )}
     </div>
   );
