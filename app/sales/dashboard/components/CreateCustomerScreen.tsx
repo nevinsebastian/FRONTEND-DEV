@@ -66,7 +66,7 @@ const CreateCustomerScreen = () => {
       };
 
       // Recalculate the total amount on input change
-      let newTotal = 0;
+      let newTotal = vehicleTotalPrice; // Start with vehicle price
       Object.entries(updatedFormData).forEach(([key, value]) => {
         if (key.includes("amount") && !isNaN(value)) {
           newTotal += Number(value);
@@ -145,6 +145,37 @@ const CreateCustomerScreen = () => {
     setBalanceAmount(balance);
   };
 
+  // Updated submitAmountData function to reflect the API changes
+  async function submitAmountData(
+    formInstanceId,
+    totalPrice,
+    amountPaid,
+    vehicleId
+  ) {
+    const url = `https://3.111.52.81:8000/form-builder/forms/amount-data/${formInstanceId}/submit/sales`;
+    const params = new URLSearchParams({
+      total_price: totalPrice,
+      amount_paid: amountPaid,
+      vehicle_id: vehicleId,
+    });
+
+    const response = await fetch(`${url}?${params.toString()}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to submit amount details");
+    }
+
+    return await response.json();
+  }
+
+  // Usage of updated function in CreateCustomerScreen component
   const handleSubmitAmountDetails = async () => {
     if (!formInstanceId || !vehicleId) {
       setError("Form instance or vehicle not selected");
@@ -154,16 +185,17 @@ const CreateCustomerScreen = () => {
     setLoading(true);
     setError("");
     try {
-      await submitAmountData(
+      const response = await submitAmountData(
         formInstanceId,
         vehicleTotalPrice,
         amountPaid,
-        balanceAmount,
         vehicleId
       );
 
-      setSuccessMessage("Amount details submitted successfully!");
-    } catch (err: any) {
+      setSuccessMessage(
+        response.message || "Amount details submitted successfully!"
+      );
+    } catch (err) {
       setError(err.message || "Failed to submit amount details");
     } finally {
       setLoading(false);
