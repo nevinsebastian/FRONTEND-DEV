@@ -379,7 +379,7 @@ const CreateCustomerScreen = () => {
         <div className="mt-4">
           <p className="font-semibold">Form Link:</p>
           <a
-            href={formLink}
+            href={formLink}   
             target="_blank"
             className="text-blue-500"
             rel="noopener noreferrer"
